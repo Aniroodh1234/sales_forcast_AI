@@ -1,4 +1,3 @@
-"""Redis service for job state management."""
 import json
 import redis
 from app.config import settings
