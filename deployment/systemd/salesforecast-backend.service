@@ -1,0 +1,17 @@
+[Unit]
+Description=SalesCast AI Backend (FastAPI)
+After=network.target redis.service mysql.service
+
+[Service]
+User=ubuntu
+Group=www-data
+WorkingDirectory=/home/ubuntu/Sales_forcasting_System/backend
+Environment="PATH=/home/ubuntu/Sales_forcasting_System/backend/venv/bin"
+EnvironmentFile=/home/ubuntu/Sales_forcasting_System/backend/.env
+ExecStart=/home/ubuntu/Sales_forcasting_System/backend/venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
+
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
