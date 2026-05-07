@@ -1,4 +1,3 @@
-"""REST + SSE API routes."""
 import json
 import asyncio
 from fastapi import APIRouter, HTTPException, Query
