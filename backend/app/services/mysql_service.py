@@ -1,4 +1,3 @@
-"""MySQL service for persistent storage of forecast results."""
 import json
 from datetime import datetime
 from app.config import settings
