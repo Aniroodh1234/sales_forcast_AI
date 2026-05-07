@@ -1,4 +1,3 @@
-"""Model adapters - each model family has its own inference adapter."""
 import os
 import json
 import joblib
