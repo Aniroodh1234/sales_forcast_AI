@@ -1,7 +1,4 @@
-"""
-Step 3: Model Training - SARIMA, Prophet, ETS, XGBoost, LSTM, TFT
-All models trained offline, saved as artifacts.
-"""
+
 import pandas as pd
 import numpy as np
 import json
@@ -42,7 +39,7 @@ def compute_metrics(actual, predicted):
     w = wmape(actual, predicted)
     return {"wMAPE": round(float(w), 6), "RMSE": round(float(rmse), 2), "MAE": round(float(mae), 2)}
 
-# ===================== SARIMA =====================
+
 def train_sarima(proc, val):
     from statsmodels.tsa.statespace.sarimax import SARIMAX
     print("\n--- Training SARIMA (per-state) ---")
@@ -87,7 +84,7 @@ def train_sarima(proc, val):
     print(f"\n  SARIMA Overall: {overall}")
     return {"overall": overall, "per_state": state_metrics}
 
-# ===================== PROPHET =====================
+
 def train_prophet(proc, val):
     from prophet import Prophet
     print("\n--- Training Prophet (per-state) ---")
@@ -134,7 +131,7 @@ def train_prophet(proc, val):
     print(f"\n  Prophet Overall: {overall}")
     return {"overall": overall, "per_state": state_metrics}
 
-# ===================== ETS =====================
+
 def train_ets(proc, val):
     from statsmodels.tsa.holtwinters import ExponentialSmoothing
     print("\n--- Training ETS (per-state) ---")
@@ -178,7 +175,7 @@ def train_ets(proc, val):
     print(f"\n  ETS Overall: {overall}")
     return {"overall": overall, "per_state": state_metrics}
 
-# ===================== XGBOOST =====================
+
 def train_xgboost(train, val):
     import xgboost as xgb
     print("\n--- Training XGBoost (global) ---")
@@ -204,7 +201,7 @@ def train_xgboost(train, val):
     
     model.save_model(os.path.join(save_dir, "xgboost_model.json"))
     
-    # Per-state metrics
+
     state_metrics = {}
     for state in sorted(val['State'].unique()):
         mask = val['State'] == state
@@ -215,14 +212,14 @@ def train_xgboost(train, val):
     overall = compute_metrics(y_val, preds)
     print(f"  XGBoost Overall: {overall}")
     
-    # Save feature importance
+   
     imp = dict(zip(feature_cols, model.feature_importances_.tolist()))
     with open(os.path.join(save_dir, "feature_importance.json"), 'w') as f:
         json.dump(imp, f, indent=2)
     
     return {"overall": overall, "per_state": state_metrics}
 
-# ===================== LSTM =====================
+
 def train_lstm(train, val):
     import torch
     import torch.nn as nn
@@ -234,7 +231,7 @@ def train_lstm(train, val):
     feature_cols = [c for c in train.columns if c not in ['Date', 'State', 'Category', 'Total']]
     scaler = joblib.load(os.path.join(PREP_DIR, "scaler.pkl"))
     
-    # Prepare sequences per state
+
     SEQ_LEN = 8
     
     def make_sequences(df):
@@ -250,10 +247,10 @@ def train_lstm(train, val):
     
     X_train, y_train = make_sequences(train)
     
-    # Scale targets
+   
     y_train_scaled = scaler.transform(y_train.reshape(-1, 1)).flatten()
     
-    # Normalize features
+  
     from sklearn.preprocessing import StandardScaler as SS
     feat_scaler = SS()
     n, seq, feat = X_train.shape
@@ -262,7 +259,7 @@ def train_lstm(train, val):
     X_train = feat_scaler.transform(X_flat).reshape(n, seq, feat).astype(np.float32)
     joblib.dump(feat_scaler, os.path.join(save_dir, "feat_scaler.pkl"))
     
-    # Handle NaN/inf
+ 
     X_train = np.nan_to_num(X_train, nan=0.0, posinf=0.0, neginf=0.0)
     y_train_scaled = np.nan_to_num(y_train_scaled, nan=0.0)
     
@@ -296,7 +293,7 @@ def train_lstm(train, val):
         if (epoch + 1) % 10 == 0:
             print(f"  Epoch {epoch+1}/50, Loss: {total_loss/len(loader):.6f}")
     
-    # Validate
+  
     X_val_seq, y_val_actual = make_sequences(val)
     if len(X_val_seq) > 0:
         X_val_seq = feat_scaler.transform(X_val_seq.reshape(-1, feat)).reshape(-1, SEQ_LEN, feat).astype(np.float32)
@@ -313,7 +310,7 @@ def train_lstm(train, val):
     
     print(f"  LSTM Overall: {overall}")
     
-    # Save
+ 
     torch.save(model.state_dict(), os.path.join(save_dir, "lstm_model.pt"))
     config = {"input_size": len(feature_cols), "hidden_size": 64, "num_layers": 2, 
               "dropout": 0.2, "seq_len": SEQ_LEN, "feature_cols": feature_cols}
@@ -322,7 +319,7 @@ def train_lstm(train, val):
     
     return {"overall": overall, "per_state": {}}
 
-# ===================== TFT (Simplified Attention LSTM) =====================
+
 def train_tft(train, val):
     import torch
     import torch.nn as nn
@@ -396,7 +393,7 @@ def train_tft(train, val):
         if (epoch + 1) % 10 == 0:
             print(f"  Epoch {epoch+1}/60, Loss: {total_loss/len(loader):.6f}")
     
-    # Validate
+  
     X_val_seq, y_val_actual = make_sequences(val)
     if len(X_val_seq) > 0:
         X_val_seq = feat_scaler.transform(X_val_seq.reshape(-1, feat_dim)).reshape(-1, SEQ_LEN, feat_dim).astype(np.float32)
@@ -413,7 +410,7 @@ def train_tft(train, val):
     print(f"  TFT Overall: {overall}")
     
     torch.save(model.state_dict(), os.path.join(save_dir, "tft_model.pt"))
-    # Copy feat_scaler for TFT too
+
     joblib.dump(feat_scaler, os.path.join(save_dir, "feat_scaler.pkl"))
     config = {"input_size": len(feature_cols), "hidden_size": 64, "num_heads": 4,
               "num_layers": 2, "dropout": 0.1, "seq_len": SEQ_LEN, "feature_cols": feature_cols}
@@ -432,7 +429,7 @@ def main():
     
     t0 = time.time()
     
-    # Train each model
+   
     all_metrics["sarima"] = train_sarima(proc, val)
     all_metrics["prophet"] = train_prophet(proc, val)
     all_metrics["ets"] = train_ets(proc, val)
@@ -440,15 +437,15 @@ def main():
     all_metrics["lstm"] = train_lstm(train, val)
     all_metrics["tft"] = train_tft(train, val)
     
-    # Save validation metrics registry
+
     os.makedirs(METRIC_DIR, exist_ok=True)
     
-    # Determine champion
+
     leaderboard = {}
     for name, m in all_metrics.items():
         leaderboard[name] = m["overall"]
     
-    # Sort by wMAPE (primary)
+
     ranked = sorted(leaderboard.items(), key=lambda x: x[1].get("wMAPE", 999))
     champion = ranked[0][0]
     
