@@ -1,4 +1,3 @@
-"""Fix LSTM and TFT validation - use full featured data for sequence building."""
 import pandas as pd
 import numpy as np
 import json
@@ -122,7 +121,7 @@ def retrain_model(model_class, model_kwargs, save_name, df, feature_cols, epochs
         if (epoch + 1) % 10 == 0:
             print(f"  Epoch {epoch+1}/{epochs}, Loss: {total_loss/len(loader):.6f}")
     
-    # Validate
+
     nv = len(X_val)
     X_val_s = feat_scaler.transform(X_val.reshape(-1, feat)).reshape(nv, SEQ_LEN, feat).astype(np.float32)
     X_val_s = np.nan_to_num(X_val_s, nan=0.0)
@@ -135,8 +134,7 @@ def retrain_model(model_class, model_kwargs, save_name, df, feature_cols, epochs
     
     metrics = compute_metrics(y_val, preds)
     print(f"  {save_name} Metrics: {metrics}")
-    
-    # Save
+
     save_dir = os.path.join(MODEL_DIR, save_name)
     os.makedirs(save_dir, exist_ok=True)
     torch.save(model.state_dict(), os.path.join(save_dir, f"{save_name}_model.pt"))
@@ -168,7 +166,7 @@ def main():
         "tft", df, feature_cols, epochs=80
     )
     
-    # Update validation_metrics.json
+
     metrics_path = os.path.join(METRIC_DIR, "validation_metrics.json")
     with open(metrics_path) as f:
         registry = json.load(f)
@@ -176,7 +174,7 @@ def main():
     registry["detailed_metrics"]["lstm"]["overall"] = lstm_metrics
     registry["detailed_metrics"]["tft"]["overall"] = tft_metrics
     
-    # Rebuild ranking
+
     leaderboard = {name: m["overall"] for name, m in registry["detailed_metrics"].items()}
     ranked = sorted(leaderboard.items(), key=lambda x: x[1].get("wMAPE", 999))
     registry["champion"] = ranked[0][0]
