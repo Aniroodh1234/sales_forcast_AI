@@ -1,4 +1,3 @@
-"""Artifact Registry - loads and caches all pre-trained model artifacts."""
 import os
 import json
 import joblib
