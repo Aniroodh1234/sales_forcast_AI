@@ -1,5 +1,3 @@
--- Initialization script for MySQL Database
-
 CREATE DATABASE IF NOT EXISTS salescast_db;
 USE salescast_db;
 
