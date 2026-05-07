@@ -1,9 +1,3 @@
-"""
-Step 2: Feature Engineering
-- Lag features, rolling stats, calendar features
-- Train/validation split (last 8 weeks = validation)
-- Save feature schema
-"""
 import pandas as pd
 import numpy as np
 import json
