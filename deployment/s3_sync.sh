@@ -1,7 +1,3 @@
-#!/bin/bash
-# Script to sync training artifacts from S3 to EC2
-# Usage: ./s3_sync.sh s3://your-bucket-name/salescast/artifacts/
-
 S3_BUCKET=$1
 
 if [ -z "$S3_BUCKET" ]; then
