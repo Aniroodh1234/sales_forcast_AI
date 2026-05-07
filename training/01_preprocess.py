@@ -1,9 +1,3 @@
-"""
-Step 1: Data Preprocessing
-- Load raw Excel, parse dates, normalize to week-ending Sunday
-- Fill missing weeks, impute gaps, handle outliers
-- Save processed data + preprocessing artifacts
-"""
 import pandas as pd
 import numpy as np
 import json
