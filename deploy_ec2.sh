@@ -1,11 +1,6 @@
-#!/bin/bash
-# ==============================================================================
-# SalesCast AI - Automated Production Deployment Script
-# Target OS: Ubuntu 24.04 LTS or 22.04 LTS (AWS EC2)
-# ==============================================================================
 set -e
 
-# Configuration
+
 REPO_URL="https://github.com/Aniroodh1234/sales_forcast_AI.git"
 PROJECT_DIR="sales_forcast_AI"
 S3_BUCKET="s3://sales-615645510621"
@@ -44,8 +39,7 @@ fi
 
 echo "Syncing ML models and artifacts from $S3_BUCKET..."
 mkdir -p artifacts
-# Assuming the root of the bucket contains preprocessor, models, metrics, data.
-# If they are inside a subfolder (like artifacts/), change this to: s3://sales-615645510621/artifacts/
+
 aws s3 sync "$S3_BUCKET" ./artifacts/ --exclude "*" \
     --include "preprocessor/*" \
     --include "models/*" \
@@ -88,7 +82,7 @@ sudo systemctl restart nginx
 
 echo -e "\n>>> 11. Configuring Systemd Services..."
 CURRENT_DIR=$(pwd)
-# Update hardcoded paths in systemd to the actual clone path
+
 sed -i "s|/home/ubuntu/Sales_forcasting_System|$CURRENT_DIR|g" deployment/systemd/salesforecast-backend.service
 sed -i "s|/home/ubuntu/Sales_forcasting_System|$CURRENT_DIR|g" deployment/systemd/salesforecast-frontend.service
 
@@ -103,7 +97,7 @@ sudo systemctl restart salesforecast-backend
 sudo systemctl restart salesforecast-frontend
 
 echo -e "\n==========================================================="
-echo "   DEPLOYMENT COMPLETE! 🚀"
+echo "   DEPLOYMENT COMPLETE!"
 echo "   Your application is now live."
 echo "   Access it by entering this EC2 instance's Public IP in your browser."
 echo "==========================================================="
