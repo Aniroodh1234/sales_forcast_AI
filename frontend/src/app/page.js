@@ -44,7 +44,7 @@ const REGIONAL_DEMAND = [
 ];
 
 export default function Home() {
-  const [phase, setPhase] = useState("initial"); // initial | processing | result
+  const [phase, setPhase] = useState("initial");
   const [modelStates, setModelStates] = useState({});
   const [globalProgress, setGlobalProgress] = useState(0);
   const [currentStage, setCurrentStage] = useState("");
@@ -53,14 +53,12 @@ export default function Home() {
   const [showAllStates, setShowAllStates] = useState(false);
   const [theme, setTheme] = useState("dark");
   
-  // New features state
   const [whatIfMultiplier, setWhatIfMultiplier] = useState(1.0);
   const [aiLogs, setAiLogs] = useState([]);
   
   const eventSourceRef = useRef(null);
   const terminalRef = useRef(null);
 
-  // Theme toggle effect
   useEffect(() => {
     if (theme === "light") {
       document.body.classList.add("light-theme");
@@ -69,7 +67,6 @@ export default function Home() {
     }
   }, [theme]);
 
-  // Auto-scroll AI terminal
   useEffect(() => {
     if (terminalRef.current) {
       terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
@@ -102,7 +99,6 @@ export default function Home() {
       const data = await res.json();
       const jobId = data.job_id;
 
-      // Open SSE stream
       const es = new EventSource(`${API_BASE}/api/forecast/${jobId}/stream`);
       eventSourceRef.current = es;
 
@@ -169,7 +165,6 @@ export default function Home() {
       ? result.forecasts
       : result.forecasts.filter((f) => f.state === selectedState);
       
-    // Apply What-If multiplier
     return base.map(f => ({
       ...f,
       predicted_value: f.predicted_value * whatIfMultiplier,
@@ -180,7 +175,6 @@ export default function Home() {
 
   const filteredForecasts = getFilteredForecasts();
   
-  // Transform data for Recharts
   const chartData = filteredForecasts.map((f, i) => ({
     week: `Wk ${i + 1}`,
     value: f.predicted_value,
@@ -226,7 +220,6 @@ export default function Home() {
   return (
     <div className="app-wrapper">
       <div className="app-container">
-        {/* HEADER */}
         <header className="header glass-panel" style={{ borderTop: "none", borderLeft: "none", borderRight: "none", borderRadius: 0 }}>
           <div className="logo-area">
             <div className="logo-icon"><TrendingUp size={20} color="#fff" /></div>
@@ -248,7 +241,6 @@ export default function Home() {
         <main className="main-content">
           <AnimatePresence mode="wait">
             
-            {/* ===== INITIAL PHASE ===== */}
             {phase === "initial" && (
               <motion.div 
                 key="initial"
@@ -258,7 +250,6 @@ export default function Home() {
                 transition={{ duration: 0.4 }}
               >
                 <div className="landing-layout">
-                  {/* Hero */}
                   <section className="hero-section glass-panel" style={{ marginBottom: 32 }}>
                     <div className="hero-bg-glow"></div>
                     <p className="hero-subtitle">Next-Gen AI Forecasting</p>
@@ -274,7 +265,6 @@ export default function Home() {
 
                   <div className="landing-grid">
                     <div className="landing-left-col">
-                      {/* News */}
                       <section className="news-section">
                         <div className="section-title">
                           <span className="dot"></span> Market Intelligence
@@ -296,7 +286,6 @@ export default function Home() {
                         </div>
                       </section>
 
-                      {/* Insights Dashboard */}
                       <section className="insights-section" style={{ marginTop: 24 }}>
                         <div className="section-title">
                           <Activity size={14} color="var(--primary-400)" style={{ marginRight: 8 }} /> Real-Time Analytics
@@ -341,7 +330,6 @@ export default function Home() {
                           </div>
                         </div>
 
-                        {/* Performance Stats */}
                         <div className="glass-panel" style={{ padding: "20px 24px", marginTop: 20, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                             <span style={{ fontSize: 12, color: "var(--text-400)", textTransform: "uppercase", fontWeight: 700, letterSpacing: 0.5 }}>Daily Inference Volume</span>
@@ -361,7 +349,6 @@ export default function Home() {
                       </section>
                     </div>
 
-                    {/* Sidebar */}
                     <aside className="sidebar">
                       <div className="glass-panel" style={{ padding: 24 }}>
                         <div className="section-title" style={{ marginBottom: 16 }}>
@@ -414,7 +401,6 @@ export default function Home() {
               </motion.div>
             )}
 
-            {/* ===== PROCESSING PHASE ===== */}
             {phase === "processing" && (
               <motion.div 
                 className="processing-container"
@@ -429,7 +415,6 @@ export default function Home() {
                   <p className="processing-subtitle">Orchestrating 6 models across 43 states in parallel</p>
                 </div>
 
-                {/* Global Progress */}
                 <div className="glass-panel" style={{ padding: 24, marginBottom: 24 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
                     <span style={{ fontSize: 14, fontWeight: 600, color: "var(--text-100)" }}>{currentStage}</span>
@@ -440,7 +425,6 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Models Grid */}
                 <div className="processing-grid">
                   {MODELS.map((m) => {
                     const state = modelStates[m.id];
@@ -469,7 +453,6 @@ export default function Home() {
                   })}
                 </div>
 
-                {/* AI REASONING TERMINAL */}
                 <div className="ai-terminal" ref={terminalRef}>
                   <div className="terminal-header">
                     <div className="mac-dot red"></div>
@@ -493,7 +476,6 @@ export default function Home() {
               </motion.div>
             )}
 
-            {/* ===== RESULT PHASE ===== */}
             {phase === "result" && result && (
               <motion.div 
                 className="result-container"
@@ -523,7 +505,6 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Champion Card */}
                 <div className="champion-card">
                   <div className="champion-badge"><Zap size={12} /> Champion Model Selected</div>
                   <div className="champion-name">{result.champion_model.toUpperCase()}</div>
@@ -548,7 +529,6 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Competitors */}
                 <div className="section-title"><Activity size={14}/> Model Comparison</div>
                 <div className="models-comparison-grid">
                   {result.model_results.map((m) => (
@@ -576,13 +556,11 @@ export default function Home() {
                   ))}
                 </div>
 
-                {/* Data Vis Section */}
                 <div className="forecast-section glass-panel">
                   <div className="result-header-row" style={{ marginBottom: 12 }}>
                     <h3 className="result-title" style={{ fontSize: 20 }}>Output Visualizer</h3>
                   </div>
 
-                  {/* What-If Analysis Slider */}
                   <div className="what-if-panel">
                     <div className="what-if-header">
                       <Activity size={16} color="var(--accent-400)"/> 
@@ -607,7 +585,6 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* State Tabs */}
                   <div className="state-tabs">
                     <button className={`state-tab ${selectedState === "all" ? "active" : ""}`} onClick={() => setSelectedState("all")}>
                       All States Aggregate
@@ -628,7 +605,6 @@ export default function Home() {
                     )}
                   </div>
 
-                  {/* Recharts Interactive Graph */}
                   {selectedState !== "all" && chartData.length > 0 && (
                     <div className="chart-wrapper">
                       <ResponsiveContainer width="100%" height="100%">
@@ -653,7 +629,6 @@ export default function Home() {
                     </div>
                   )}
 
-                  {/* Table Data */}
                   <div style={{ overflowX: "auto", marginTop: 24, borderRadius: 6, border: "1px solid var(--border-subtle)" }}>
                     <table className="forecast-table">
                       <thead>
@@ -693,7 +668,6 @@ export default function Home() {
         </main>
       </div>
 
-      {/* FOOTER */}
       <footer className="footer">
         <div className="footer-branding">
           <div className="logo-icon" style={{ width: 28, height: 28, fontSize: 14 }}>
