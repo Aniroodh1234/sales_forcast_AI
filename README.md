@@ -4,7 +4,7 @@ An end-to-end, highly optimized Artificial Intelligence platform for distributed
 
 ---
 
-## 🏗️ System Design & Architecture
+## System Design & Architecture
 
 The system is built on a decoupled, microservices-inspired architecture designed for low latency and high throughput.
 
@@ -26,7 +26,7 @@ The system is built on a decoupled, microservices-inspired architecture designed
 
 ---
 
-## 🧠 AI Engine & Orchestration
+## AI Engine & Orchestration
 
 The platform utilizes a **Champion-Challenger** machine learning architecture. Rather than relying on a single algorithm, the system evaluates 6 distinct models to find the optimal fit for the data.
 
@@ -43,7 +43,7 @@ When a forecast is requested, the backend orchestrator assigns the task to async
 
 ---
 
-## ⚡ Optimizations & Enhancements
+## Optimizations & Enhancements
 
 ### 1. Speed & Latency Reduction
 - **In-Memory Artifacts:** The `ArtifactRegistry` caches all 6 ML models and massive `.parquet` baseline datasets into RAM at boot time. Inference takes milliseconds because there is zero disk I/O.
@@ -62,7 +62,7 @@ When a forecast is requested, the backend orchestrator assigns the task to async
 
 ---
 
-## 🚀 How to Run Locally (Start to End)
+## How to Run Locally (Start to End)
 
 Because the heavy ML artifacts (`.pkl`, `.h5`, `.parquet`) are `.gitignore`d, you **must train the models first** to generate the `artifacts/` folder before running the backend.
 
@@ -109,7 +109,7 @@ Navigate to `http://localhost:3000` in your browser. The orchestrator will autom
 
 ---
 
-## 🔮 Future Scope: Production Deployment
+## Future Scope: Production Deployment
 
 In the future, deploying this system to an AWS EC2 instance will be fully automated for massive scale. We have already prepared the infrastructure scripts inside the `deployment/` folder:
 
