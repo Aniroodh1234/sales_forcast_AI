@@ -1,5 +1,3 @@
-#!/bin/bash
-# SalesCast AI - EC2 Deployment Provisioning Script (Ubuntu 24.04 LTS)
 set -e
 
 echo "Updating system packages..."
